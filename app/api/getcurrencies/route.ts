@@ -1,9 +1,7 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
-    const body = await req.json();
-    console.log("Fetching currencies from external API for : ", body);
     const response = await fetch(
       "https://kratest.pesaflow.com/api/static/custom/currencies",
       { method: "GET" }

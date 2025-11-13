@@ -94,9 +94,29 @@ export interface Declaration {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body: {
+      ref_no: string;
+      items: {
+        type: string;
+        hscode: string;
+        description: string;
+        quantity: string | number;
+        value: string | number;
+        currency: string;
+      }[];
+      compute_assessments: boolean;
+    } = await req.json();
 
     console.log("Received data:", body);
+
+    // conver the quantity and value to numbers
+    const items = body.items.map((item) => ({
+      ...item,
+      quantity: Number(item.quantity),
+      value: Number(item.value),
+    }));
+
+    body.items = items;
 
     const results = await fetch(
       "https://kratest.pesaflow.com/api/customs/passenger-declaration",
@@ -119,7 +139,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.log("Total Tax Calculated:", totalTax, data);
+    console.log("Total Tax Calculated:", totalTax);
 
     return NextResponse.json(
       { message: "Success", data, totalTax },
